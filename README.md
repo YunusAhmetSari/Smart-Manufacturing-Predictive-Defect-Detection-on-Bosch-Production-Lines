@@ -1,85 +1,97 @@
-# 📋 Template-Anleitung
+# Smart Manufacturing: Predictive Defect Detection on Bosch Production Lines
 
-> **Für Kursteilnehmer*innen:** Diese Sektion nach dem Setup deines Projekts löschen!
+> Prediction of manufacturing defects in Bosch production lines using machine learning to reduce quality defects and production costs.
 
-## So verwenden Sie dieses Template:
-Dieses Template hilft dir, dein Data Science Projekt effizient zu organisieren und zu dokumentieren. Es bietet eine gängige Struktur, um deine Arbeit zu planen, durchzuführen und zu präsentieren.
+## Project overview
 
-### 1. Template verwenden
-Templates können in GitHub über den Button **"Use this template" -> "Create a new repository"** in der oberen rechten Ecke in ein eigenes Repository überführt werden. Nutze diese Vorlage als Inspiration und passe sie an dein Projekt an! 
+**Problem:**
+Manufacturing errors cause high costs due to rejects, rework and customer complaints. The aim is to identify faulty components at an early stage before they reach quality control.
 
-### 2. Projekt klonen
-Danach kannst du dein neues Repository direkt über VS Code klonen. Dazu öffnest du in VS Code die Kommando-Palette (Strg+Shift+P) bzw. (Cmd+Shift+P) auf dem Mac und gibst **"Git: Clone"** ein. Wähle dann "Clone from GitHub..." und melde dich ggf. bei GitHub an. Suche nach deinem Repository und wähle einen lokalen Ordner aus, in dem das Projekt gespeichert werden soll.
+**Database:**  
+Anonymised measurement data from Bosch production lines with thousands of features, organised by:
+- `L{Line}` – Production line
+- `S{Station}` – Measuring station
+- `F{Feature}` – Measured value
 
-### 3. Abhängigkeiten installieren
-Nachdem du das Repository geklont hast, musst du die Abhängigkeiten installieren. Öffne dazu ein neues Terminal in VS Code über die Menüleiste "Terminal"->"Neues Terminal" und führe die folgenden Befehle aus:
+**Challenges:**
+- **Extreme class imbalance:** Only ~0.1% of components are faulty
+- **Large amount of data:** Several GB of numerical, categorical and timestamp data
+- **Feature engineering:** Thousands of anonymised features require intelligent aggregation
 
-```bash
-uv sync
-```
-
-### 4. Erweiterungen hinzufügen
-Für dieses Projekt empfehlen wir die Installation der folgenden VS Code Erweiterungen:
-- **Python** (Microsoft) - Bietet Unterstützung für Python-Entwicklung.
-- **Jupyter** (Microsoft) - Ermöglicht das Arbeiten mit Jupyter Notebooks direkt in VS Code.
-- **Even Better TOML** (tamasfe) - Verbessert die Bearbeitung von TOML-Dateien.
-- **Ruff** (Astral Software) - Ein schneller Linter für Python, der dir hilft, sauberen Code zu schreiben.
-- **Material Icon Theme** (PKief) - Verbessert die Dateisymbole in VS Code für eine bessere Übersicht.
-
-Dafür kannst du den Erweiterungs-Tab in VS Code öffnen (Symbol mit den vier Quadraten auf der linken Seitenleiste) und in die Suchleiste `@recommended` eingeben. Danach sollten dir die empfohlenen Erweiterungen angezeigt werden.
-
-### Notebooks ausführen
-Im Ordner `notebooks/` findest du ein Jupyter Notebook namens `01_exploration.ipynb`, das als Ausgangspunkt für deine Datenanalyse dient. Öffne das Notebook in VS Code und wähle oben rechts dein virtuelles Environment als Kernel aus. Führe die Zellen nacheinander aus. Wenn alles geklappt hat wird das Notebook einen Datensatz von Kaggle laden und im Ordner `data/` speichern.
-
-Von hier an kannst du mit deinem Projekt starten und die Vorlagen nach belieben anpassen.
-
-Schaue dir für weitere Informationen zum Template die Datei [docs/project.md](./docs/project.md) an.
-
-
-Für dein Projekt kannst du die folgenden Abschnitte in der `README.md` Datei anpassen, um dein Projekt zu beschreiben und zu präsentieren. Lösche anschließend diese Anleitung.
+**Goal:**  
+Development of a binary classification model for predicting faulty components (`Response = 1`), optimised for the **Matthews Correlation Coefficient (MCC)**.
 
 ---
 
-# [DEIN PROJEKTTITEL HIER] 🚀
+## Project structure
 
-> Eine kurze, prägnante Beschreibung deines Data Science Projekts in 1-2 Sätzen.
+```
+├── data/
+│   ├── raw/              # Original data from Kaggle
+│   └── processed/        # Prepared features
+├── notebooks/
+│   └── 01_exploration.ipynb      # Data exploration
+└── src/
+    └── core/             # Helper functions (Data Loading etc.)
+```
 
-## 📊 Projektübersicht
-
-**Problemstellung:** 
-<!-- Beschreibe das Problem, das du lösen möchtest -->
-
-**Ziel:** 
-<!-- Was ist das Hauptziel deines Projekts? -->
-
-**Methoden:** 
-<!-- Welche Techniken/Algorithmen verwendest du? -->
-
-
+---
 
 ## Setup
 
-Klone das Repository
-```bash
-# Repository klonen
-git clone [DEIN-REPO-LINK]
-cd [REPO-NAME]
-```
+### Prerequisites
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/) Package manager
+- Kaggle API Credentials (for data access)
 
-Installiere [uv](https://uv.dev) (falls noch nicht installiert) und synchronisiere die Abhängigkeiten
+### Installation
+
 ```bash
-# Dependencies installieren
+# Clone repository
+git clone https://github.com/YunusAhmetSari/Smart-Manufacturing-Predictive-Defect-Detection-on-Bosch-Production-Lines.git
+cd Smart-Manufacturing-Predictive-Defect-Detection-on-Bosch-Production-Lines
+
+# Install dependencies
 uv sync
 ```
 
-### Ausführung
+### Kaggle API setup
+1. Kaggle account create at [kaggle.com](https://www.kaggle.com)
+2. API Token generate: Account → Settings → API → Create New Token
+3. `kaggle.json` in `~/.kaggle/` (Linux/Mac) or `%USERPROFILE%\.kaggle\` (Windows) save
 
-Notebooks in dieser Reihenfolge ausführen:
-1. notebooks/01_exploration.ipynb
-<!--
-2. notebooks/02_preprocessing.ipynb
-3. notebooks/03_modeling.ipynb
-4. notebooks/04_results.ipynb
--->
+---
 
+## Execution
 
+Notebooks in this order:
+
+1. **`01_exploration.ipynb`** – Data loading and exploration
+
+---
+
+## Evaluation metric
+
+**Matthews Correlation Coefficient (MCC):**
+
+$$MCC = \frac{TP \cdot TN - FP \cdot FN}{\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}}$$
+
+The MCC was chosen, as it is more robust than accuracy or F1-Score for imbalanced datasets.
+
+---
+
+## Data source
+
+[Kaggle: Bosch Production Line Performance](https://www.kaggle.com/competitions/bosch-production-line-performance)
+
+---
+
+## About this Project
+
+- **Context:** Data-Science Project
+- **Duration:** 01.02.2026 - 
+- **Author:** Yunus Ahmet Sari
+
+## Kontakt
+
+**[GitHub](https://github.com/YunusAhmetSari)** | **[LinkedIn](https://www.linkedin.com/in/yunussari/)** | **[E-Mail](mailto:yunusahmet61@gmail.com)**
